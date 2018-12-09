@@ -29,7 +29,7 @@ def get_stocks_data(stock_idx = "AAPL", start_date = "01/01/2014", end_date = "1
     :param stock_idx: str of yahoo index be default is "AAPL"
     :param start_date: str with format mm/dd/YYYY  (so "%m-%d-%Y") by default is "01/01/2014"
     "left end date", "oldest date"
-    :param end_date: str with format mm/dd/YYY (so "%m-%d-%Y") by default is "01/01/2014" "12/03/2018"
+    :param end_date: str with format mm/dd/YYY (so "%m-%d-%Y") by default is  "12/03/2018"
     "right end date", "most recent date"
     :return: A pandas.core.frame.DataFrame with cols ['Dates', 'High', 'Low', 'Open', 'Close', 'Volume', 'Adj Close']
     The index of the DataFrame is a pandas.core.indexes.datetimes.DatetimeIndex obj w/ the date stamp corresponding to
