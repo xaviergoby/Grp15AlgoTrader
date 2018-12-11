@@ -59,7 +59,8 @@ def date_transfromer(begin_date='2004-01-01',end_date=date.today(),interval='3m'
         datum = datum + relativedelta(days=+1)
         rightformat = datum.strftime('%Y-%m-%d')
         emptylist.append(rightformat)
-        datum = datum + relativedelta(days=+90)
+        # 84 is a multiple of 7
+        datum = datum + relativedelta(days=+84)
 
 
     return emptylist
@@ -80,7 +81,14 @@ def multiple_time_frames_combiner(keyword,begin_date='2004-01-01',end_date=date.
         date_number += 1
     return google_data_frame_3_months
 
-print(multiple_time_frames_combiner(['Pizza']))
+def relative_search_density_longer_period(keyword,begin_date='2004-01-01',end_date=date.today()):
+    timeframe = '{} {}'.format(begin_date, end_date)
+    # This has a 7-day interval
+    big_picture = get_google_trends_data(keyword,timeframe)
+    daily_data = multiple_time_frames_combiner(keyword,begin_date='2004-01-01',end_date=date.today())
+
+
+print(get_google_trends_data(['Pizza'],'2014-01-01 2018-01-12'))
 
 
 
