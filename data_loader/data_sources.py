@@ -56,9 +56,31 @@ def date_transfromer(begin_date='2004-01-01',end_date=date.today(),interval='3m'
 
     datum = datetime.date(year,month,day)
     while datum < end_date:
-        emptylist.append(datum)
+        datum = datum + relativedelta(days=+1)
+        rightformat = datum.strftime('%Y-%m-%d')
+        emptylist.append(rightformat)
         datum = datum + relativedelta(days=+90)
+
+
     return emptylist
+
+
+
+def multiple_time_frames_combiner(keyword,begin_date='2004-01-01',end_date=date.today()):
+    date_list_3m = date_transfromer(begin_date=begin_date,end_date=end_date,interval='3m')
+    date_number = 0
+    google_data_frame_3_months = pd.DataFrame()
+    while date_number < len(date_list_3m) -1:
+        start_date = date_list_3m[date_number]
+        final_date = date_list_3m[date_number + 1]
+        timeframe = '{} {}'.format(start_date, final_date)
+        google_data = get_google_trends_data(keyword,timeframe)
+        frames = [google_data_frame_3_months,google_data]
+        google_data_frame_3_months = pd.concat(frames)
+        date_number += 1
+    return google_data_frame_3_months
+
+print(multiple_time_frames_combiner(['Pizza']))
 
 
 
