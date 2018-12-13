@@ -59,8 +59,6 @@ def date_transfromer(begin_date='2004-01-01',end_date=date.today(),interval='3m'
         rightformat = datum.strftime('%Y-%m-%d')
         emptylist.append(rightformat)
         datum = datum + relativedelta(months=+1)
-
-
     return emptylist
 
 
@@ -82,7 +80,7 @@ def multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.
 def relative_search_density_longer_period(keyword,begin_date='2004-01-01',end_date=date.today()):
     timeframe = '{} {}'.format(begin_date, end_date)
     # This has a 7-day interval
-    #big_picture = get_google_trends_data(keyword,timeframe)
+    big_picture = get_google_trends_data(keyword,timeframe)
     daily_data = multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.today())
     month_list = date_transfromer()
     print(daily_data)
@@ -94,6 +92,7 @@ def relative_search_density_longer_period(keyword,begin_date='2004-01-01',end_da
         for index, row in big_picture.iterrows():
             month_from_daily_values = big_picture.loc[(big_picture['date'].year == year_value) & (big_picture['date'].month == month_value)]
         print(month_value)
+        return month_value
 
 
     # for index, row in big_picture.iterrows():
@@ -110,6 +109,7 @@ def relative_search_density_longer_period(keyword,begin_date='2004-01-01',end_da
 
 #print(multiple_time_frames_combiner(['Pizza']))
 
-relative_search_density_longer_period(['Pizza'])
+print(relative_search_density_longer_period(['Pizza']))
+x = relative_search_density_longer_period(['Pizza'])
 
 
