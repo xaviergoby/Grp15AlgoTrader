@@ -81,7 +81,7 @@ def multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.
     # When you request the data from google, you only get daily data from 3 months intervals
     # When you want multiple years, you have to combine those 3 month slots
     # First we get a list of dates with 3 month intervals
-    date_list_3m = date_transfromer(begin_date=begin_date,end_date=end_date,interval_monts=3)
+    date_list_3m = date_transfromer(begin_date=begin_date,end_date=end_date,interval_months=3)
     date_number = 0
 
     # Make empty datatframe
