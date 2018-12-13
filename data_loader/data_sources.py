@@ -48,7 +48,7 @@ def get_stocks_data(stock_idx = "AAPL", start_date = "01/01/2004", end_date = "1
     # data.insert(0, "Dates", wk_days)
     return data
 
-def date_transfromer(begin_date='2004-01-01',end_date=date.today(),interval_months=3):
+def date_transformer(begin_date='2004-01-01', end_date=date.today(), interval_months=3):
 
     # To get a list of dates with a given interval and given begin and end date
     # Helpfull to transform date ranges to intervalls we can use for google
@@ -81,7 +81,7 @@ def multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.
     # When you request the data from google, you only get daily data from 3 months intervals
     # When you want multiple years, you have to combine those 3 month slots
     # First we get a list of dates with 3 month intervals
-    date_list_3m = date_transfromer(begin_date=begin_date,end_date=end_date,interval_monts=3)
+    date_list_3m = date_transformer(begin_date=begin_date, end_date=end_date, interval_monts=3)
     date_number = 0
 
     # Make empty datatframe
@@ -114,11 +114,11 @@ def relative_search_density_longer_period(keyword,begin_date='2004-01-01',end_da
     timeframe = '{} {}'.format(begin_date, end_date)
 
     # This dataframe has a 1-month interval if the begin date is 2004
-    big_picture = get_google_trends_data(keyword,timeframe)
-    daily_data = multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.today())
+    big_picture = get_google_trends_data(keyword, timeframe)
+    daily_data = multiple_time_frames_combiner(keyword, begin_date='2016-01-01', end_date=date.today())
 
     # Get the month list again to iterate over the months once again
-    month_list = date_transfromer()
+    month_list = date_transformer()
     print(daily_data)
     for date_value in month_list:
         # Trying to select the months from the monthly values and combine this with all the days from
@@ -130,7 +130,13 @@ def relative_search_density_longer_period(keyword,begin_date='2004-01-01',end_da
         for index, row in big_picture.iterrows():
             month_from_daily_values = big_picture.loc[(big_picture['date'].year == year_value) & (big_picture['date'].month == month_value)]
         print(month_value)
+    return big_picture, daily_data
 
+
+if __name__ == "__main__":
+    big_and_daily_data = relative_search_density_longer_period(['Pizza'])
+    big_picture = big_and_daily_data[0]
+    daily_data = big_and_daily_data[1]
 
     # for index, row in big_picture.iterrows():
     #     date_value = row['date']
