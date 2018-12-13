@@ -48,17 +48,28 @@ def get_stocks_data(stock_idx = "AAPL", start_date = "01/01/2004", end_date = "1
     # data.insert(0, "Dates", wk_days)
     return data
 
-def date_transfromer(begin_date='2004-01-01',end_date=date.today(),interval='3m'):
+def date_transfromer(begin_date='2004-01-01',end_date=date.today(),interval_months=3):
+
+    # To get a list of dates with a given interval and given begin and end date
+    # Helpfull to transform date ranges to intervalls we can use for google
+
     emptylist = []
+
+    # Get the right part of the string
     year = int(begin_date[0:4])
     month = int(begin_date[5:7])
     day = int(begin_date[8:10])
 
+    # Use the datetime function to have an easier date calculation
     datum = datetime.date(year,month,day)
     while datum < end_date:
+
+        # The format that the google function accepts
         rightformat = datum.strftime('%Y-%m-%d')
         emptylist.append(rightformat)
-        datum = datum + relativedelta(months=+1)
+
+        # Add an interval to go to the next interval
+        datum = datum + relativedelta(months=+interval_months)
 
 
     return emptylist
@@ -66,27 +77,52 @@ def date_transfromer(begin_date='2004-01-01',end_date=date.today(),interval='3m'
 
 
 def multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.today()):
-    date_list_3m = date_transfromer(begin_date=begin_date,end_date=end_date,interval='3m')
+    # To combine the dates of multiple months
+    # When you request the data from google, you only get daily data from 3 months intervals
+    # When you want multiple years, you have to combine those 3 month slots
+    # First we get a list of dates with 3 month intervals
+    date_list_3m = date_transfromer(begin_date=begin_date,end_date=end_date,interval_monts=3)
     date_number = 0
+
+    # Make empty datatframe
     google_data_frame_3_months = pd.DataFrame()
+
+    # Iterate over the list with 3 month intervals
     while date_number < len(date_list_3m) -1:
         start_date = date_list_3m[date_number]
         final_date = date_list_3m[date_number + 1]
+
+        # Get the data in the right format for the Google function
         timeframe = '{} {}'.format(start_date, final_date)
+
+        # Request the 3 month data
         google_data = get_google_trends_data(keyword,timeframe)
+
+        # Add them to the dataframe in pandas style
         frames = [google_data_frame_3_months,google_data]
         google_data_frame_3_months = pd.concat(frames)
+
         date_number += 1
+
     return google_data_frame_3_months
 
 def relative_search_density_longer_period(keyword,begin_date='2004-01-01',end_date=date.today()):
+
+    # Combine the daily data with the monthly data
+
+    # Get the timeframe in the right format for google
     timeframe = '{} {}'.format(begin_date, end_date)
-    # This has a 7-day interval
-    #big_picture = get_google_trends_data(keyword,timeframe)
+
+    # This dataframe has a 1-month interval if the begin date is 2004
+    big_picture = get_google_trends_data(keyword,timeframe)
     daily_data = multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.today())
+
+    # Get the month list again to iterate over the months once again
     month_list = date_transfromer()
     print(daily_data)
     for date_value in month_list:
+        # Trying to select the months from the monthly values and combine this with all the days from
+        # the daily values from this month.
         print(date_value)
         print(type(date_value))
         year_value = int(date_value[0:4])
