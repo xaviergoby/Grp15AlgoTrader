@@ -56,10 +56,8 @@ def date_transfromer(begin_date='2004-01-01',end_date=date.today(),interval='3m'
 
     datum = datetime.date(year,month,day)
     while datum < end_date:
-        datum = datum + relativedelta(days=-1)
         rightformat = datum.strftime('%Y-%m-%d')
         emptylist.append(rightformat)
-        # 84 is a multiple of 7
         datum = datum + relativedelta(months=+1)
 
 
@@ -67,7 +65,7 @@ def date_transfromer(begin_date='2004-01-01',end_date=date.today(),interval='3m'
 
 
 
-def multiple_time_frames_combiner(keyword,begin_date='2004-01-01',end_date=date.today()):
+def multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.today()):
     date_list_3m = date_transfromer(begin_date=begin_date,end_date=end_date,interval='3m')
     date_number = 0
     google_data_frame_3_months = pd.DataFrame()
@@ -84,15 +82,34 @@ def multiple_time_frames_combiner(keyword,begin_date='2004-01-01',end_date=date.
 def relative_search_density_longer_period(keyword,begin_date='2004-01-01',end_date=date.today()):
     timeframe = '{} {}'.format(begin_date, end_date)
     # This has a 7-day interval
-    big_picture = get_google_trends_data(keyword,timeframe)
-    daily_data = multiple_time_frames_combiner(keyword,begin_date='2004-01-01',end_date=date.today())
+    #big_picture = get_google_trends_data(keyword,timeframe)
+    daily_data = multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.today())
+    month_list = date_transfromer()
+    print(daily_data)
+    for date_value in month_list:
+        print(date_value)
+        print(type(date_value))
+        year_value = int(date_value[0:4])
+        month_value = int(date_value[5:7])
+        for index, row in big_picture.iterrows():
+            month_from_daily_values = big_picture.loc[(big_picture['date'].year == year_value) & (big_picture['date'].month == month_value)]
+        print(month_value)
+
+
+    # for index, row in big_picture.iterrows():
+    #     date_value = row['date']
+    #     print(date_value)
+    #     year_value = int(date_value[0:4])
+    #     month_value = int(date_value[5:7])
+    #     month_from_daily_values = daily_data.loc[(daily_data['date'].year == year_value) & (daily_data['date'].month == month_value)]
+    # print(month_from_daily_values)
 
 
 
 
 
-print(multiple_time_frames_combiner(['Pizza']))
+#print(multiple_time_frames_combiner(['Pizza']))
 
-
+relative_search_density_longer_period(['Pizza'])
 
 
