@@ -81,7 +81,7 @@ def multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.
     # When you request the data from google, you only get daily data from 3 months intervals
     # When you want multiple years, you have to combine those 3 month slots
     # First we get a list of dates with 3 month intervals
-    date_list_3m = date_transfromer(begin_date=begin_date,end_date=end_date,interval_months=3)
+    date_list_3m = date_transfromer(begin_date=begin_date,end_date=end_date,interval_months=1)
     date_number = 0
 
     # Make empty datatframe
@@ -118,20 +118,22 @@ def get_daily_and_montly_data(keyword,begin_date='2016-01-01',end_date=date.toda
     daily_data = multiple_time_frames_combiner(keyword,begin_date=begin_date,end_date=date.today())
     return big_picture,daily_data
 
-
+def merge_monthly_and_daily_data(keyword,begin_date='2016-01-01',end_date=date.today()):
     # Get the month list again to iterate over the months once again
+    big_picture, daily_data = get_daily_and_montly_data(keyword,begin_date=begin_date,end_date=end_date)
     month_list = date_transfromer()
     print(daily_data)
-    for date_value in month_list:
-        # Trying to select the months from the monthly values and combine this with all the days from
-        # the daily values from this month.
+    # for date_value in month_list:
+    #     # Trying to select the months from the monthly values and combine this with all the days from
+    #     # the daily values from this month.
+    #     print(date_value)
+    #     print(type(date_value))
+    #     year_value = int(date_value[0:4])
+    #     month_value = int(date_value[5:7])
+    for row in big_picture.iterrows():
+        date_value = big_picture.get_value(row,'date')
         print(date_value)
-        print(type(date_value))
-        year_value = int(date_value[0:4])
-        month_value = int(date_value[5:7])
-        for index, row in big_picture.iterrows():
-            month_from_daily_values = big_picture.loc[(big_picture['date'].year == year_value) & (big_picture['date'].month == month_value)]
-        print(month_value)
+    print(month_value)
 
 
     # for index, row in big_picture.iterrows():
@@ -143,11 +145,8 @@ def get_daily_and_montly_data(keyword,begin_date='2016-01-01',end_date=date.toda
     # print(month_from_daily_values)
 
 
+merge_monthly_and_daily_data(['Pizza'])
 
 
-
-#print(multiple_time_frames_combiner(['Pizza']))
-
-relative_search_density_longer_period(['Pizza'])
 
 
