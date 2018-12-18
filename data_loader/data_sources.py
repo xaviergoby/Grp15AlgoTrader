@@ -121,32 +121,29 @@ def get_daily_and_montly_data(keyword,begin_date='2016-01-01',end_date=date.toda
 def merge_monthly_and_daily_data(keyword,begin_date='2016-01-01',end_date=date.today()):
     # Get the month list again to iterate over the months once again
     big_picture, daily_data = get_daily_and_montly_data(keyword,begin_date=begin_date,end_date=end_date)
-    month_list = date_transfromer()
-    print(daily_data)
-    # for date_value in month_list:
-    #     # Trying to select the months from the monthly values and combine this with all the days from
-    #     # the daily values from this month.
-    #     print(date_value)
-    #     print(type(date_value))
-    #     year_value = int(date_value[0:4])
-    #     month_value = int(date_value[5:7])
-    for row in big_picture.iterrows():
-        date_value = big_picture.get_value(row,'date')
-        print(date_value)
-    print(month_value)
+    running = True
+    months = big_picture.index
+    normalized_dataframe = pd.DataFrame
+    for month in months:
+        month = str(month)
+        date_without_day = str(acces_month_from_date(month))
+        print(date_without_day)
+        try:
+            daily_values = daily_data.loc[date_without_day]
+            monthly_value = big_picture.loc[month]/100
+            daily_values.loc[:, keyword[0]] *= monthly_value
+            frames = [normalized_dataframe, daily_values]
+            normalized_dataframe = pd.concat(frames)
+            print('Trying')
+        except:
+            continue
+    return normalized_dataframe
 
 
-    # for index, row in big_picture.iterrows():
-    #     date_value = row['date']
-    #     print(date_value)
-    #     year_value = int(date_value[0:4])
-    #     month_value = int(date_value[5:7])
-    #     month_from_daily_values = daily_data.loc[(daily_data['date'].year == year_value) & (daily_data['date'].month == month_value)]
-    # print(month_from_daily_values)
-
-
-merge_monthly_and_daily_data(['Pizza'])
-
-
-
-
+def acces_month_from_date(date):
+    month_only = date[:-12]
+    return month_only
+# print(acces_month_from_date('2018-01-01'))
+print(merge_monthly_and_daily_data(['Pizza']))
+df = merge_monthly_and_daily_data(['Pizza'])
+df1,df2 = get_daily_and_montly_data(['Pizza'])
