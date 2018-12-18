@@ -48,42 +48,102 @@ def get_stocks_data(stock_idx = "AAPL", start_date = "01/01/2004", end_date = "1
     # data.insert(0, "Dates", wk_days)
     return data
 
-def date_transfromer(begin_date='2004-01-01',end_date=date.today(),interval='3m'):
+def date_transfromer(begin_date='2004-01-01',end_date=date.today(),interval_months=3):
+
+    # To get a list of dates with a given interval and given begin and end date
+    # Helpfull to transform date ranges to intervalls we can use for google
+
     emptylist = []
+
+    # Get the right part of the string
     year = int(begin_date[0:4])
     month = int(begin_date[5:7])
     day = int(begin_date[8:10])
 
+    # Use the datetime function to have an easier date calculation
     datum = datetime.date(year,month,day)
     while datum < end_date:
-        datum = datum + relativedelta(days=+1)
+
+        # The format that the google function accepts
         rightformat = datum.strftime('%Y-%m-%d')
         emptylist.append(rightformat)
-        datum = datum + relativedelta(days=+90)
+
+        # Add an interval to go to the next interval
+        datum = datum + relativedelta(months=+interval_months)
 
 
     return emptylist
 
 
 
-def multiple_time_frames_combiner(keyword,begin_date='2004-01-01',end_date=date.today()):
-    date_list_3m = date_transfromer(begin_date=begin_date,end_date=end_date,interval='3m')
+def multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.today()):
+    # To combine the dates of multiple months
+    # When you request the data from google, you only get daily data from 3 months intervals
+    # When you want multiple years, you have to combine those 3 month slots
+    # First we get a list of dates with 3 month intervals
+    date_list_3m = date_transfromer(begin_date=begin_date,end_date=end_date,interval_months=1)
     date_number = 0
+
+    # Make empty datatframe
     google_data_frame_3_months = pd.DataFrame()
+
+    # Iterate over the list with 3 month intervals
     while date_number < len(date_list_3m) -1:
         start_date = date_list_3m[date_number]
         final_date = date_list_3m[date_number + 1]
+
+        # Get the data in the right format for the Google function
         timeframe = '{} {}'.format(start_date, final_date)
+
+        # Request the 3 month data
         google_data = get_google_trends_data(keyword,timeframe)
+
+        # Add them to the dataframe in pandas style
         frames = [google_data_frame_3_months,google_data]
         google_data_frame_3_months = pd.concat(frames)
+
         date_number += 1
+
     return google_data_frame_3_months
 
-print(multiple_time_frames_combiner(['Pizza']))
+def get_daily_and_montly_data(keyword,begin_date='2016-01-01',end_date=date.today()):
+
+    # Combine the daily data with the monthly data
+
+    # Get the timeframe in the right format for google (bigpicture)
+    timeframe = '{} {}'.format('2004-01-01', end_date)
+
+    # This dataframe has a 1-month interval if the begin date is 2004
+    big_picture = get_google_trends_data(keyword,timeframe)
+    daily_data = multiple_time_frames_combiner(keyword,begin_date=begin_date,end_date=date.today())
+    return big_picture,daily_data
+
+def merge_monthly_and_daily_data(keyword,begin_date='2016-01-01',end_date=date.today()):
+    # Get the month list again to iterate over the months once again
+    big_picture, daily_data = get_daily_and_montly_data(keyword,begin_date=begin_date,end_date=end_date)
+    running = True
+    months = big_picture.index
+    normalized_dataframe = pd.DataFrame
+    for month in months:
+        month = str(month)
+        date_without_day = str(acces_month_from_date(month))
+        print(date_without_day)
+        try:
+            daily_values = daily_data.loc[date_without_day]
+            monthly_value = big_picture.loc[month]/100
+            daily_values.loc[:, keyword[0]] *= monthly_value
+            frames = [normalized_dataframe, daily_values]
+            normalized_dataframe = pd.concat(frames)
+            print('Trying')
+        except:
+            continue
+    return normalized_dataframe
 
 
-
-
-
-
+def acces_month_from_date(date):
+    month_only = date[:-12]
+    return month_only
+# print(acces_month_from_date('2018-01-01'))
+print(merge_monthly_and_daily_data(['Pizza']))
+df = merge_monthly_and_daily_data(['Pizza'])
+df1,df2 = get_daily_and_montly_data(['Pizza'])
