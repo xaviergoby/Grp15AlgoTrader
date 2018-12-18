@@ -143,7 +143,3 @@ def merge_monthly_and_daily_data(keyword,begin_date='2016-01-01',end_date=date.t
 def acces_month_from_date(date):
     month_only = date[:-12]
     return month_only
-# print(acces_month_from_date('2018-01-01'))
-print(merge_monthly_and_daily_data(['Pizza']))
-df = merge_monthly_and_daily_data(['Pizza'])
-df1,df2 = get_daily_and_montly_data(['Pizza'])
