@@ -76,7 +76,7 @@ def date_transfromer(begin_date='2004-01-01',end_date=date.today(),interval_mont
 
 
 
-def multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.today()):
+def multiple_time_frames_combiner(keyword, begin_date='2016-01-01', end_date=date.today()):
     # To combine the dates of multiple months
     # When you request the data from google, you only get daily data from 3 months intervals
     # When you want multiple years, you have to combine those 3 month slots
@@ -130,6 +130,7 @@ def relative_search_density_longer_period(keyword,begin_date='2004-01-01',end_da
         for index, row in big_picture.iterrows():
             month_from_daily_values = big_picture.loc[(big_picture['date'].year == year_value) & (big_picture['date'].month == month_value)]
         print(month_value)
+    return big_picture, daily_data
 
 
     # for index, row in big_picture.iterrows():
@@ -139,13 +140,16 @@ def relative_search_density_longer_period(keyword,begin_date='2004-01-01',end_da
     #     month_value = int(date_value[5:7])
     #     month_from_daily_values = daily_data.loc[(daily_data['date'].year == year_value) & (daily_data['date'].month == month_value)]
     # print(month_from_daily_values)
-
-
-
-
-
+# begin_date='2004-01-01'
+# end_date=date.today()
+# timeframe = '{} {}'.format(begin_date, end_date)
+# keyword = ["Pizza"]
+# big_picture = get_google_trends_data(keyword,timeframe)
+# daily_data = multiple_time_frames_combiner(keyword,begin_date='2 016-01-01',end_date=date.today())
+# # big_picture = get_google_trends_data(['Pizza'], timeframe)
+# print(big_picture)
 #print(multiple_time_frames_combiner(['Pizza']))
 
-relative_search_density_longer_period(['Pizza'])
+# relative_search_density_longer_period(['Pizza'])
 
 
