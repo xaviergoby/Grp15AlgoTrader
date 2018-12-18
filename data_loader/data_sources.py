@@ -106,16 +106,18 @@ def multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.
 
     return google_data_frame_3_months
 
-def relative_search_density_longer_period(keyword,begin_date='2004-01-01',end_date=date.today()):
+def get_daily_and_montly_data(keyword,begin_date='2016-01-01',end_date=date.today()):
 
     # Combine the daily data with the monthly data
 
-    # Get the timeframe in the right format for google
-    timeframe = '{} {}'.format(begin_date, end_date)
+    # Get the timeframe in the right format for google (bigpicture)
+    timeframe = '{} {}'.format('2004-01-01', end_date)
 
     # This dataframe has a 1-month interval if the begin date is 2004
     big_picture = get_google_trends_data(keyword,timeframe)
-    daily_data = multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.today())
+    daily_data = multiple_time_frames_combiner(keyword,begin_date=begin_date,end_date=date.today())
+    return big_picture,daily_data
+
 
     # Get the month list again to iterate over the months once again
     month_list = date_transfromer()
