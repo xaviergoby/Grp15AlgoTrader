@@ -111,36 +111,48 @@ def get_daily_and_montly_data(keyword,begin_date='2016-01-01',end_date=date.toda
     # Combine the daily data with the monthly data
 
     # Get the timeframe in the right format for google (bigpicture)
-    timeframe = '{} {}'.format('2004-01-01', end_date)
+    timeframe = '{} {}'.format('2004-01-01', date.today())
 
     # This dataframe has a 1-month interval if the begin date is 2004
     big_picture = get_google_trends_data(keyword,timeframe)
-    daily_data = multiple_time_frames_combiner(keyword,begin_date=begin_date,end_date=date.today())
+    daily_data = multiple_time_frames_combiner(keyword,begin_date=begin_date,end_date=end_date)
     return big_picture,daily_data
 
 def merge_monthly_and_daily_data(keyword,begin_date='2016-01-01',end_date=date.today()):
-    # Get the month list again to iterate over the months once again
+    # Get the dataframes of the monthly and daily data
     big_picture, daily_data = get_daily_and_montly_data(keyword,begin_date=begin_date,end_date=end_date)
-    running = True
+
+    # Make an empty dataframe to add the normalized data to
     normalized_dataframe = pd.DataFrame()
+
+    # Get all the different years in the daily data
     years = daily_data.index.year.drop_duplicates()
-    print(years)
+
+    # Iterate over the years, then in those years, iterate over the months
     for year in years:
+        # Select rows corresponding to the year
         big_picture_this_year = big_picture.loc[str(year)]
         daily_data_this_year = daily_data.loc[str(year)]
+
+        # Get all the different months in the year
         months = daily_data_this_year.index.month.drop_duplicates()
-        print(months)
+
+        # Iterate over the months
         for month in months:
-            print(big_picture_this_year.loc['{}-{}'.format(year, month)])
+
+            # Select the rows with the right months, needs to be formatted
             month_value = big_picture_this_year.loc['{}-{}'.format(year, month)][keyword[0]]/100
+            # Now month_value is a row, we want the value in the row
             month_value = month_value.values[0]
-            print(month_value)
+
+            # Select the rows with the right months, needs to be formatted
             daily_data_this_month = daily_data_this_year.loc['{}-{}'.format(year, month)]
-            print(daily_data_this_month)
+
+            # Multiply all the dayvalues with the month value to get the relative value
             daily_data_this_month.loc[:, keyword[0]] *= month_value
-            print(daily_data_this_month)
+
+            # Do some magic to get it all in a single dataframe
             frames = [normalized_dataframe, daily_data_this_month]
-            print(frames)
             normalized_dataframe = pd.concat(frames)
 
     return normalized_dataframe
@@ -150,3 +162,8 @@ def acces_month_from_date(date):
     month_only = date[:-12]
     return month_only
 
+def get_google_trends_for_longer_time_period(keyword,begin_date='2016-01-01',end_date=date.today()):
+    # I think this is called a wrapper?
+    # This function is to make it all look a bit nicer
+    normalized_dataframe = merge_monthly_and_daily_data(keyword,begin_date=begin_date,end_date=end_date)
+    return normalized_dataframe
