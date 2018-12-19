@@ -129,11 +129,14 @@ def merge_monthly_and_daily_data(keyword,begin_date='2016-01-01',end_date=date.t
         big_picture_this_year = big_picture.loc[str(year)]
         daily_data_this_year = daily_data.loc[str(year)]
         months = daily_data_this_year.index.month.drop_duplicates()
+        print(months)
         for month in months:
-            print(big_picture_this_year.loc[str(month)])
-            month_value = big_picture_this_year.loc[str(month)][keyword[0]]/100
-            daily_data_this_month = daily_data_this_year.loc[str(month)]
+            print(big_picture_this_year.loc['{}-{}'.format(year, month)])
+            month_value = big_picture_this_year.loc['{}-{}'.format(year, month)][keyword[0]]/100
+            daily_data_this_month = daily_data_this_year.loc['{}-{}'.format(year, month)]
+            print(daily_data_this_month)
             daily_data_this_month.loc[:, keyword[0]] *= month_value
+            print(daily_data_this_month)
             frames = [normalized_dataframe, daily_data_this_month]
             normalized_dataframe = pd.concat(frames)
 
@@ -143,4 +146,4 @@ def merge_monthly_and_daily_data(keyword,begin_date='2016-01-01',end_date=date.t
 def acces_month_from_date(date):
     month_only = date[:-12]
     return month_only
-merge_monthly_and_daily_data(['Pizza'])
+normalized_dataframe = merge_monthly_and_daily_data(['Pizza'])
