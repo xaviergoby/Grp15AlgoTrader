@@ -122,7 +122,7 @@ def merge_monthly_and_daily_data(keyword,begin_date='2016-01-01',end_date=date.t
     # Get the month list again to iterate over the months once again
     big_picture, daily_data = get_daily_and_montly_data(keyword,begin_date=begin_date,end_date=end_date)
     running = True
-    normalized_dataframe = pd.DataFrame
+    normalized_dataframe = pd.DataFrame()
     years = daily_data.index.year.drop_duplicates()
     print(years)
     for year in years:
@@ -133,11 +133,14 @@ def merge_monthly_and_daily_data(keyword,begin_date='2016-01-01',end_date=date.t
         for month in months:
             print(big_picture_this_year.loc['{}-{}'.format(year, month)])
             month_value = big_picture_this_year.loc['{}-{}'.format(year, month)][keyword[0]]/100
+            month_value = month_value.values[0]
+            print(month_value)
             daily_data_this_month = daily_data_this_year.loc['{}-{}'.format(year, month)]
             print(daily_data_this_month)
             daily_data_this_month.loc[:, keyword[0]] *= month_value
             print(daily_data_this_month)
             frames = [normalized_dataframe, daily_data_this_month]
+            print(frames)
             normalized_dataframe = pd.concat(frames)
 
     return normalized_dataframe
@@ -146,4 +149,4 @@ def merge_monthly_and_daily_data(keyword,begin_date='2016-01-01',end_date=date.t
 def acces_month_from_date(date):
     month_only = date[:-12]
     return month_only
-normalized_dataframe = merge_monthly_and_daily_data(['Pizza'])
+
