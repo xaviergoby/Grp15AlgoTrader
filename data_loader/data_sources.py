@@ -67,15 +67,11 @@ def date_transfromer(begin_date='2004-01-01',end_date=date.today(),interval_mont
         # The format that the google function accepts
         rightformat = datum.strftime('%Y-%m-%d')
         emptylist.append(rightformat)
-<<<<<<< HEAD
-        datum = datum + relativedelta(months=+1)
-=======
 
         # Add an interval to go to the next interval
         datum = datum + relativedelta(months=+interval_months)
 
 
->>>>>>> development
     return emptylist
 
 
@@ -105,52 +101,11 @@ def multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.
         # Add them to the dataframe in pandas style
         frames = [google_data_frame_3_months,google_data]
         google_data_frame_3_months = pd.concat(frames)
-<<<<<<< HEAD
-        date_number += 1
-    return google_data_frame_3_months
-
-def relative_search_density_longer_period(keyword,begin_date='2004-01-01',end_date=date.today()):
-    timeframe = '{} {}'.format(begin_date, end_date)
-    # This has a 7-day interval
-    big_picture = get_google_trends_data(keyword,timeframe)
-    daily_data = multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.today())
-    month_list = date_transfromer()
-    print(daily_data)
-    for date_value in month_list:
-        print(date_value)
-        print(type(date_value))
-        year_value = int(date_value[0:4])
-        month_value = int(date_value[5:7])
-        for index, row in big_picture.iterrows():
-            month_from_daily_values = big_picture.loc[(big_picture['date'].year == year_value) & (big_picture['date'].month == month_value)]
-        print(month_value)
-        return month_value
-
-
-    # for index, row in big_picture.iterrows():
-    #     date_value = row['date']
-    #     print(date_value)
-    #     year_value = int(date_value[0:4])
-    #     month_value = int(date_value[5:7])
-    #     month_from_daily_values = daily_data.loc[(daily_data['date'].year == year_value) & (daily_data['date'].month == month_value)]
-    # print(month_from_daily_values)
-
-
-=======
->>>>>>> development
 
         date_number += 1
 
     return google_data_frame_3_months
 
-<<<<<<< HEAD
-#print(multiple_time_frames_combiner(['Pizza']))
-
-print(relative_search_density_longer_period(['Pizza']))
-x = relative_search_density_longer_period(['Pizza'])
-
-
-=======
 def get_daily_and_montly_data(keyword,begin_date='2016-01-01',end_date=date.today()):
 
     # Combine the daily data with the monthly data
@@ -167,29 +122,25 @@ def merge_monthly_and_daily_data(keyword,begin_date='2016-01-01',end_date=date.t
     # Get the month list again to iterate over the months once again
     big_picture, daily_data = get_daily_and_montly_data(keyword,begin_date=begin_date,end_date=end_date)
     running = True
-    months = big_picture.index
     normalized_dataframe = pd.DataFrame
-    for month in months:
-        month = str(month)
-        date_without_day = str(acces_month_from_date(month))
-        print(date_without_day)
-        try:
-            daily_values = daily_data.loc[date_without_day]
-            monthly_value = big_picture.loc[month]/100
-            daily_values.loc[:, keyword[0]] *= monthly_value
-            frames = [normalized_dataframe, daily_values]
+    years = daily_data.index.year.drop_duplicates()
+    print(years)
+    for year in years:
+        big_picture_this_year = big_picture.loc[str(year)]
+        daily_data_this_year = daily_data.loc[str(year)]
+        months = daily_data_this_year.index.month.drop_duplicates()
+        for month in months:
+            print(big_picture_this_year.loc[str(month)])
+            month_value = big_picture_this_year.loc[str(month)][keyword[0]]/100
+            daily_data_this_month = daily_data_this_year.loc[str(month)]
+            daily_data_this_month.loc[:, keyword[0]] *= month_value
+            frames = [normalized_dataframe, daily_data_this_month]
             normalized_dataframe = pd.concat(frames)
-            print('Trying')
-        except:
-            continue
+
     return normalized_dataframe
 
 
 def acces_month_from_date(date):
     month_only = date[:-12]
     return month_only
-# print(acces_month_from_date('2018-01-01'))
-print(merge_monthly_and_daily_data(['Pizza']))
-df = merge_monthly_and_daily_data(['Pizza'])
-df1,df2 = get_daily_and_montly_data(['Pizza'])
->>>>>>> development
+merge_monthly_and_daily_data(['Pizza'])
