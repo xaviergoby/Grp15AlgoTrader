@@ -2,16 +2,8 @@ import pandas as pd
 
 
 class RSI:
-    # Note to self (Xavier): This was copied from revamp.new_rsi and not from technical_indicator_classes.RSI
 
     def __init__(self, close, time_period=14, overbought_level=70, oversold_level=30):
-        """
-
-        :param close: <class 'pandas.core.series.Series'> of the close price
-        :param time_period: int of the time period. Is 14 by default
-        :param overbought_level: int of the over bought limit. Is 70 by default
-        :param oversold_level: int of the over sold limit. Is 30 by default
-        """
         # 1
         self.close = close
         # 2
@@ -21,9 +13,7 @@ class RSI:
         # 2
         self.rsi_values = self.get_rsi_values()
         # 4
-        self.rsi_cat_labels = self.get_rsi_labels()
-        # 5
-        self.rsi_int_labels = self.get_rsi_int_labels()
+        self.rsi_labels = self.get_rsi_labels()
 
     def get_rsi_values(self):
         """
@@ -48,12 +38,10 @@ class RSI:
 
         RS = _gain / _loss
         result = pd.Series(100. - (100. / (1. + RS)), name="RSI")
+        result = result.dropna()
         return result
 
     def get_rsi_labels(self):
-        """
-        :return: A list of buy, sell and hold labels
-        """
         signal = self.get_rsi_values().dropna().values
         cat_sig_list_labels = []
         for s in signal:
@@ -77,13 +65,22 @@ class RSI:
                 cat_sig_list_labels.append(0)
         return cat_sig_list_labels
 
-if __name__ == "__main__":
-    from data_loader import data_sources
-    apple = data_sources.get_stocks_data("AAPL")
-    close = apple["Close"]
-    print(type(close))
-    rsi = RSI(close, time_period=14, overbought_level=70, oversold_level=30)
-    rsi_values = rsi.get_rsi_values()
-    print(len(rsi.get_rsi_values()), type(rsi.rsi_values), type(rsi.get_rsi_values()), rsi.rsi_values.shape)
-    # print(len(rsi.get_rsi_labels()), type(rsi.rsi_labels), type(rsi.get_rsi_labels()))
+    def get_rsi_int_labels_ts(self):
+        raw_signal = self.get_rsi_values()
+        labelled_signal = raw_signal.copy()
+        labelled_signal[labelled_signal < 30] = 1
+        labelled_signal[labelled_signal > 70] = -1
+        labelled_signal[(labelled_signal > 30) & (labelled_signal < 70)] = 0
+        return labelled_signal
+
+
+
+# if __name__ == "__main__":
+#     from load_data import data_getter_funcs
+#     apple = data_getter_funcs.get_stocks_data()
+#     close = apple["Close"]
+#     rsi = RSI(close, time_period=14, overbought_level=70, oversold_level=30)
+#     rsi_values = rsi.get_rsi_values()
+#     print(len(rsi.get_rsi_values()), type(rsi.rsi_values), type(rsi.get_rsi_values()), rsi.rsi_values.shape)
+#     print(len(rsi.get_rsi_labels()), type(rsi.rsi_labels), type(rsi.get_rsi_labels()))
 
