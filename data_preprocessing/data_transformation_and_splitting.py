@@ -2,6 +2,7 @@
 
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
+import pandas as pd
 
 def uni_and_multivar_ts_train_test_split(x, y, train_ratio):
     """

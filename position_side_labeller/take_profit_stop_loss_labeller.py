@@ -1,5 +1,5 @@
 import pandas as pd
-from revamp.load_data import stock_data
+from data_loader import stock_data
 
 
 

@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
-from lazarus.load_data import data_getter_funcs
-from lazarus.tech_indicator_classes import RSI
+
 
 class AdvancedBuyAndHoldStrategy:
 

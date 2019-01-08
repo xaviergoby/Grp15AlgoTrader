@@ -1,13 +1,13 @@
-from revamp.load_data import stock_data
+from data_loader import stock_data
 import pandas as pd
-from revamp.position_side_labeller import take_profit_stop_loss_labeller_v2
-from technical_indicator_features import new_rsi, new_sma_crossover
-from revamp.technical_indicator_features import new_sma
-from technical_indicator_features.new_daily_volitility import getDailyVol
-from revamp.signal_features_creation.collect_and_merge_series_features import CollectAndMergeSeriesFeatures
-from revamp.data_preprocessing.train_test_split import uni_and_multivar_ts_matrix_train_test_split
+from position_side_labeller import take_profit_stop_loss_labeller
+from technical_indicators import rsi, sma_crossover
+from technical_indicators import sma
+from technical_indicators.new_daily_volitility import getDailyVol
+from signals.collect_and_merge_series_features import CollectAndMergeSeriesFeatures
+from data_preprocessing.data_transformation_and_splitting import uni_and_multivar_ts_matrix_train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from revamp.technical_indicator_features import new_average_true_return_v1
+from technical_indicators import average_true_return
 import numpy as np
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import BaggingClassifier
@@ -26,7 +26,7 @@ apple_close_copy = apple_close.copy()
 expiration_days_limit = None
 take_profit_pct = 10
 stop_loss_pct = 10
-position_labels = take_profit_stop_loss_labeller_v2.PositionSideLabeler(apple_close,
+position_labels = take_profit_stop_loss_labeller.PositionSideLabeler(apple_close,
                                                                         take_profit_pct=take_profit_pct,
                                                                         stop_loss_pct=stop_loss_pct,
                                                                         expiration_days_limit=expiration_days_limit)
@@ -51,16 +51,16 @@ technical_parameters = {"EMA": {"trend_period":days_elapsed_top_50_pct_q_avg},
 
 
 # Initialising technical indicator class instances w/ specified argument parameters
-sma_signal = new_sma.SMA(apple_close, "AAPL", technical_parameters["SMA"]["trend_period_days"])
-ma_crossover_signal = new_sma_crossover.SMACrossOver(apple_close,
+sma_signal = sma.SMA(apple_close, "AAPL", technical_parameters["SMA"]["trend_period_days"])
+ma_crossover_signal = sma_crossover.SMACrossOver(apple_close,
                                                      technical_parameters["SMACrossOver"]["short_term_period"],
                                                      technical_parameters["SMACrossOver"]["long_term_period"],
                                                      technical_parameters["SMACrossOver"]["threshold"])
-rsi_signal = new_rsi.RSI(apple_close, technical_parameters["RSI"]["time_period"],
+rsi_signal = rsi.RSI(apple_close, technical_parameters["RSI"]["time_period"],
                          technical_parameters["RSI"]["overbought_level"],
                          technical_parameters["RSI"]["oversold_level"])
 daily_volatility = getDailyVol(apple_close, technical_parameters["getDailyVol"]["span0"]).dropna()
-atr14d = new_average_true_return_v1.ATR(apple_df, period_length=days_elapsed_average).create_atr_series()
+atr14d = average_true_return.ATR(apple_df, period_length=days_elapsed_average).create_atr_series()
 # atr_vol = new_average_true_return.ATR(apple_df, period_length=14)
 
 
@@ -77,27 +77,6 @@ collected_features = CollectAndMergeSeriesFeatures(rsi=rsi_signal_values,
                                                    volatility=daily_volatility,
                                                    atr=atr14d)
 
-# collected_features = CollectAndMergeSeriesFeatures(rsi=rsi_signal_values,
-#                                                    sma21d=sma_signal_values,
-#                                                    sma_crossover=sma_crossover_signal_values,
-#                                                    volatility=daily_volatility,
-#                                                    atr=atr14d)
-
-# collected_features = CollectAndMergeSeriesFeatures(rsi=rsi_signal_values,
-#                                                    sma21d=sma_signal_values,
-#                                                    sma_crossover=sma_crossover_signal_values,
-#                                                    atr=atr14d)
-
-# collected_features = CollectAndMergeSeriesFeatures(sma21d=sma_signal_values,
-#                                                    sma_crossover=sma_crossover_signal_values,
-#                                                    volatility=daily_volatility)
-
-# collected_features = CollectAndMergeSeriesFeatures(sma21d=sma_signal_values,
-#                                                    atr=atr14d)
-
-# collected_features = CollectAndMergeSeriesFeatures(sma21d=sma_signal_values,
-#                                                    atr=atr14d,
-#                                                    volatility=daily_volatility)
 
 features_df = collected_features.get_features_df()
 features_df_copy = features_df.copy()

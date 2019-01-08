@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
-from lazarus.load_data import data_getter_funcs
-from lazarus.tech_indicator_classes import RSI
+
 
 class AdvancedBuyAndHoldStrategy:
 
@@ -186,60 +185,60 @@ class AdvancedBuyAndHoldStrategy:
 
 
 
-if __name__ == "__main__":
-
-    tickers = ["AAPL", "AMZN", "ING", "INGA.AS"]
-    ticker = tickers[0]
-    apple = data_getter_funcs.get_stocks_data(ticker)
-    rsi_signal = RSI.RSI(apple, time_period=14,
-                         overbought_level=70,
-                         oversold_level=30)
-
-    rsi_signal_labels = rsi_signal.get_cat_sig_labels()
-    rsi_signal_encoded_labels = rsi_signal.get_cat_sig_int_encoded_labels()
-    print(type(rsi_signal))
-    print(type(rsi_signal_encoded_labels))
-
-    print("Number of observations:", len(rsi_signal_encoded_labels))
-    print("Number of Buy labels: ", rsi_signal_encoded_labels.count(1))
-    print("Number of Sell labels: ", rsi_signal_encoded_labels.count(-1))
-    print("Number of Hold labels: ", rsi_signal_encoded_labels.count(0))
-    rsi_signal_encoded_labels = np.asarray(rsi_signal_encoded_labels)
-
-    starting_balance = 1000
-    quantity = 5
-    take_profit = 0.2
-    max_open_orders_permitted = 3
-    number_of_days = len(apple)
-    # number_of_days = len(apple) - 100
-
-    trader = AdvancedBuyAndHoldStrategy(apple, ticker,
-                                        rsi_signal_encoded_labels,
-                                        starting_balance=starting_balance, quantity=quantity,
-                                        take_profit=take_profit, max_open_orders_permitted=max_open_orders_permitted,
-                                        display_daily_performance=True, display_buy_event_info=True,
-                                        display_sell_event_info=True, display_hold_event_info=True)
-
-    trader.start_trading_sim()
-
-    print('\n' * 3)
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Portfolio Performance Feedback Information~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-
-    final_portfolio_value = trader.cashBalance + sum(trader.open_orders)
-
-    print("End of trading simulation portfolio value:   {0} $".format(round(final_portfolio_value, 2)))
-    print("End of trading simulation portfolio open orders value:   {0} $".format(round(sum(trader.open_orders), 2)))
-    print("End of trading simulation portfolio cash balance:   {0} $".format(round(trader.cashBalance, 2)))
-
-    pct_change = (final_portfolio_value - starting_balance) / starting_balance * 100
-
-    print("Percentage Total Change in Portfolio Value:   {0} %".format(round(pct_change, 2)))
-
-    print("\nStrategy optional parameters:\nCompany Yahoo stock index/indicator: {0}"
-          "\nStarting Balance: {1}\nMax quantity of shares to purchase: {2}"
-          "\nTake profit ratio: {3}\nMax number of open orders permitted: {4}"
-          "\nNumber of trading days simulated: {5}".format(ticker, starting_balance, quantity,
-                                                            take_profit, max_open_orders_permitted,
-                                                            number_of_days))
-
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+# if __name__ == "__main__":
+#
+#     tickers = ["AAPL", "AMZN", "ING", "INGA.AS"]
+#     ticker = tickers[0]
+#     apple = data_getter_funcs.get_stocks_data(ticker)
+#     rsi_signal = RSI.RSI(apple, time_period=14,
+#                          overbought_level=70,
+#                          oversold_level=30)
+#
+#     rsi_signal_labels = rsi_signal.get_cat_sig_labels()
+#     rsi_signal_encoded_labels = rsi_signal.get_cat_sig_int_encoded_labels()
+#     print(type(rsi_signal))
+#     print(type(rsi_signal_encoded_labels))
+#
+#     print("Number of observations:", len(rsi_signal_encoded_labels))
+#     print("Number of Buy labels: ", rsi_signal_encoded_labels.count(1))
+#     print("Number of Sell labels: ", rsi_signal_encoded_labels.count(-1))
+#     print("Number of Hold labels: ", rsi_signal_encoded_labels.count(0))
+#     rsi_signal_encoded_labels = np.asarray(rsi_signal_encoded_labels)
+#
+#     starting_balance = 1000
+#     quantity = 5
+#     take_profit = 0.2
+#     max_open_orders_permitted = 3
+#     number_of_days = len(apple)
+#     # number_of_days = len(apple) - 100
+#
+#     trader = AdvancedBuyAndHoldStrategy(apple, ticker,
+#                                         rsi_signal_encoded_labels,
+#                                         starting_balance=starting_balance, quantity=quantity,
+#                                         take_profit=take_profit, max_open_orders_permitted=max_open_orders_permitted,
+#                                         display_daily_performance=True, display_buy_event_info=True,
+#                                         display_sell_event_info=True, display_hold_event_info=True)
+#
+#     trader.start_trading_sim()
+#
+#     print('\n' * 3)
+#     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Portfolio Performance Feedback Information~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+#
+#     final_portfolio_value = trader.cashBalance + sum(trader.open_orders)
+#
+#     print("End of trading simulation portfolio value:   {0} $".format(round(final_portfolio_value, 2)))
+#     print("End of trading simulation portfolio open orders value:   {0} $".format(round(sum(trader.open_orders), 2)))
+#     print("End of trading simulation portfolio cash balance:   {0} $".format(round(trader.cashBalance, 2)))
+#
+#     pct_change = (final_portfolio_value - starting_balance) / starting_balance * 100
+#
+#     print("Percentage Total Change in Portfolio Value:   {0} %".format(round(pct_change, 2)))
+#
+#     print("\nStrategy optional parameters:\nCompany Yahoo stock index/indicator: {0}"
+#           "\nStarting Balance: {1}\nMax quantity of shares to purchase: {2}"
+#           "\nTake profit ratio: {3}\nMax number of open orders permitted: {4}"
+#           "\nNumber of trading days simulated: {5}".format(ticker, starting_balance, quantity,
+#                                                             take_profit, max_open_orders_permitted,
+#                                                             number_of_days))
+#
+#     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
