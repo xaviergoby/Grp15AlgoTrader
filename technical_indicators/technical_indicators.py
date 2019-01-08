@@ -36,22 +36,27 @@ def RSI(dataframe, column="Close", period=14):
     return dataframe.join(rsi.to_frame('RSI'))
 
 
-def EMA(data, trend_period_days=21, return_data=False):
+def EMA(data, trend_period_days=21, return_data=False, macd=False):
     """
     Exponential Moving Average
     """
     trend_period_name = str(trend_period_days) + "d"
     dt_dates_list = data.index.date.tolist()
     
-    if return_data is False:
+    if return_data == False and macd == False:
         close = data.Close
         trend = data.Close.ewm(span=trend_period_days).mean()
         ema_trend = pd.DataFrame({"Dates":dt_dates_list, "Close":close.values, trend_period_name:trend.values}, index=range(len(dt_dates_list)))
         return ema_trend
     
-    elif return_data is True:
+    elif return_data == True and macd == False:
+        trend = data.Close.ewm(span=trend_period_days).mean()
+        return trend
+    
+    else:
         trend = data.ewm(span=trend_period_days).mean()
         return trend
+
 
 
 def MACD(data, ema_days_upper=26, ema_days_lower=12, return_data=False):
@@ -66,9 +71,9 @@ def MACD(data, ema_days_upper=26, ema_days_lower=12, return_data=False):
     trend = ema_trend_26d - ema_trend_12d
     macd_trend = pd.DataFrame({"Dates":dt_dates_list, "Close":close.values, "MACD":trend.values }, index=range(len(dt_dates_list)))
     
-    if return_data is False:
+    if return_data == False:
         return macd_trend
-    elif return_data is True:
+    elif return_data == True:
         return trend
 
 
@@ -81,9 +86,9 @@ def MACD_signal_line(data):
     close = data.Close
     
     macd = MACD(data, return_data=True)
-    ema_9d = EMA(macd, trend_period_days=9, return_data=True)
+    ema_9d = EMA(macd, trend_period_days=9, return_data=True, macd=True)
     signal_line = macd - ema_9d
-    signal_line_trend = pd.DataFrame({"Dates":dt_dates_list, "Close":close.valeus, "MACD":macd.values, "9d EMA":ema_9d.values, "Signal Line":signal_line}, index=range(len(dt_dates_list)))
+    signal_line_trend = pd.DataFrame({"Dates":dt_dates_list, "Close":close.values, "MACD":macd.values, "9d EMA":ema_9d.values, "Signal Line":signal_line.values}, index=range(len(dt_dates_list)))
     
     return signal_line_trend
     
