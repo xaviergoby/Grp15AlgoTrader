@@ -122,28 +122,23 @@ def merge_monthly_and_daily_data(keyword,begin_date='2016-01-01',end_date=date.t
     # Get the month list again to iterate over the months once again
     big_picture, daily_data = get_daily_and_montly_data(keyword,begin_date=begin_date,end_date=end_date)
     running = True
-    months = big_picture.index
     normalized_dataframe = pd.DataFrame
-    for month in months:
-        month = str(month)
-        date_without_day = str(acces_month_from_date(month))
-        print(date_without_day)
-        try:
-            daily_values = daily_data.loc[date_without_day]
-            monthly_value = big_picture.loc[month]/100
-            daily_values.loc[:, keyword[0]] *= monthly_value
-            frames = [normalized_dataframe, daily_values]
+    years = daily_data.index.year.drop_duplicates()
+    print(years)
+    for year in years:
+        big_picture_this_year = big_picture.loc[str(year)]
+        daily_data_this_year = daily_data.loc[str(year)]
+        months = daily_data_this_year.index.month.drop_duplicates()
+        for month in months:
+            month_value = big_picture_this_year.loc[str(month)][keyword[0]]/100
+            daily_data_this_month = daily_data_this_year.loc[str(month)]
+            daily_data_this_month.loc[:, keyword[0]] *= month_value
+            frames = [normalized_dataframe, daily_data_this_month]
             normalized_dataframe = pd.concat(frames)
-            print('Trying')
-        except:
-            continue
+
     return normalized_dataframe
 
 
 def acces_month_from_date(date):
     month_only = date[:-12]
     return month_only
-# print(acces_month_from_date('2018-01-01'))
-print(merge_monthly_and_daily_data(['Pizza']))
-df = merge_monthly_and_daily_data(['Pizza'])
-df1,df2 = get_daily_and_montly_data(['Pizza'])
