@@ -71,9 +71,6 @@ def unnormalize(trainPredict, testPredict, scaler_y, y_train, y_test):
     y_test = scaler_y.inverse_transform(y_test)
     return trainPredict, testPredict, y_train, y_test
 
-
-
-
 def create_y_train_and_test_pred_array(y_train, y_test, trainPredict, testPredict):
     """
     :param y: a numpy array of the shifted true y/targets
@@ -100,6 +97,44 @@ def create_y_train_and_test_pred_array(y_train, y_test, trainPredict, testPredic
     print("post PredictPlot creation PredictPlot [0]:{0}, PredictPlot[-1]:{1}".format(PredictPlot[0], PredictPlot[-1]))
     print("\nPredictPlot shape:{0}".format(PredictPlot.shape))
     return PredictPlot
+
+def uni_and_multivar_ts_matrix_train_test_split(x, y, train_ratio):
+    """
+    :param x: a numpy array or pd.DataFrame or pd.Series of your input data (features)
+    :param y: a numpy array or pd.DataFrame or pd.Series of your output data (targets/labels/classes)
+    :param train_ratio: train_ratio: the ratio of training to testing data you want.
+    i.e. train_ratio=0.7 means 70 you want 70% of your data set to be dedicated for training and the
+    remaining 30% for testing!
+    :return: a 4-tuple (x_train, y_train, x_test, y_test)
+    """
+    n_samples = max(x.shape)
+    n_features = min(x.shape)
+
+    if isinstance(x, (pd.DataFrame, pd.Series)) and isinstance(y, (pd.DataFrame, pd.Series)):
+        train_samples_num = int(n_samples * train_ratio)
+        x_train = x[:train_samples_num]
+        y_train = y[:train_samples_num]
+        x_test = x[train_samples_num:]
+        y_test = y[train_samples_num:]
+        return x_train, y_train, x_test, y_test
+
+    else:
+        if y.ndim == 1 or y.shape[0] != n_samples:
+            y = y.reshape(n_samples, 1)
+        if x.shape[0] != n_samples:
+            x = x.reshape(n_samples, n_features)
+        elif x.ndim == 1:
+            x = x.reshape(n_samples, 1)
+
+        train_samples_num = int(n_samples * train_ratio)
+
+        x_train = x[:train_samples_num,:]
+        y_train = y[:train_samples_num]
+        x_test = x[train_samples_num:,:]
+        y_test = y[train_samples_num:]
+
+        return x_train, y_train, x_test, y_test
+
 
 
 
