@@ -81,7 +81,7 @@ def multiple_time_frames_combiner(keyword, begin_date='2016-01-01', end_date=dat
     # When you request the data from google, you only get daily data from 3 months intervals
     # When you want multiple years, you have to combine those 3 month slots
     # First we get a list of dates with 3 month intervals
-    date_list_3m = date_transfromer(begin_date=begin_date,end_date=end_date,interval_months=3)
+    date_list_3m = date_transfromer(begin_date=begin_date,end_date=end_date,interval_months=1)
     date_number = 0
 
     # Make empty datatframe
@@ -106,50 +106,39 @@ def multiple_time_frames_combiner(keyword, begin_date='2016-01-01', end_date=dat
 
     return google_data_frame_3_months
 
-def relative_search_density_longer_period(keyword,begin_date='2004-01-01',end_date=date.today()):
+def get_daily_and_montly_data(keyword,begin_date='2016-01-01',end_date=date.today()):
 
     # Combine the daily data with the monthly data
 
-    # Get the timeframe in the right format for google
-    timeframe = '{} {}'.format(begin_date, end_date)
+    # Get the timeframe in the right format for google (bigpicture)
+    timeframe = '{} {}'.format('2004-01-01', end_date)
 
     # This dataframe has a 1-month interval if the begin date is 2004
     big_picture = get_google_trends_data(keyword,timeframe)
-    daily_data = multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.today())
+    daily_data = multiple_time_frames_combiner(keyword,begin_date=begin_date,end_date=date.today())
+    return big_picture,daily_data
 
+def merge_monthly_and_daily_data(keyword,begin_date='2016-01-01',end_date=date.today()):
     # Get the month list again to iterate over the months once again
-    month_list = date_transfromer()
-    print(daily_data)
-    for date_value in month_list:
-        # Trying to select the months from the monthly values and combine this with all the days from
-        # the daily values from this month.
-        print(date_value)
-        print(type(date_value))
-        year_value = int(date_value[0:4])
-        month_value = int(date_value[5:7])
-        for index, row in big_picture.iterrows():
-            month_from_daily_values = big_picture.loc[(big_picture['date'].year == year_value) & (big_picture['date'].month == month_value)]
-        print(month_value)
-    return big_picture, daily_data
+    big_picture, daily_data = get_daily_and_montly_data(keyword,begin_date=begin_date,end_date=end_date)
+    running = True
+    normalized_dataframe = pd.DataFrame
+    years = daily_data.index.year.drop_duplicates()
+    print(years)
+    for year in years:
+        big_picture_this_year = big_picture.loc[str(year)]
+        daily_data_this_year = daily_data.loc[str(year)]
+        months = daily_data_this_year.index.month.drop_duplicates()
+        for month in months:
+            month_value = big_picture_this_year.loc[str(month)][keyword[0]]/100
+            daily_data_this_month = daily_data_this_year.loc[str(month)]
+            daily_data_this_month.loc[:, keyword[0]] *= month_value
+            frames = [normalized_dataframe, daily_data_this_month]
+            normalized_dataframe = pd.concat(frames)
+
+    return normalized_dataframe
 
 
-    # for index, row in big_picture.iterrows():
-    #     date_value = row['date']
-    #     print(date_value)
-    #     year_value = int(date_value[0:4])
-    #     month_value = int(date_value[5:7])
-    #     month_from_daily_values = daily_data.loc[(daily_data['date'].year == year_value) & (daily_data['date'].month == month_value)]
-    # print(month_from_daily_values)
-# begin_date='2004-01-01'
-# end_date=date.today()
-# timeframe = '{} {}'.format(begin_date, end_date)
-# keyword = ["Pizza"]
-# big_picture = get_google_trends_data(keyword,timeframe)
-# daily_data = multiple_time_frames_combiner(keyword,begin_date='2 016-01-01',end_date=date.today())
-# # big_picture = get_google_trends_data(['Pizza'], timeframe)
-# print(big_picture)
-#print(multiple_time_frames_combiner(['Pizza']))
-
-# relative_search_density_longer_period(['Pizza'])
-
-
+def acces_month_from_date(date):
+    month_only = date[:-12]
+    return month_only
