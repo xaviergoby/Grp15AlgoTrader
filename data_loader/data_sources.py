@@ -10,22 +10,6 @@ pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 
-
-def get_google_trends_data(keyword, timeframe):
-    """
-    Requires the pytrends library
-    Please visit the GitHub link for detailed explanation of the "unofficial API for Google Trends" called pytrends
-    GitHub link: https://github.com/GeneralMills/pytrends
-    :param keyword: a list of str format elements of the keywords to be searched
-    i.e. ["Bitcoin"] or ["Debt", "Mortgage", "Financial Crisis"]
-    :return: a pandas DataFrame object
-    """
-    pytrend_obj = TrendReq()
-    pytrend_obj.build_payload(keyword, cat=0, timeframe = timeframe, geo='', gprop='')
-    interest_over_time_df = pytrend_obj.interest_over_time()
-    data = interest_over_time_df[keyword]
-    return data
-
 def get_stocks_data(stock_idx = "AAPL", start_date = "01/01/2004", end_date = "12/06/2018"):
     """
     Requires the pandas-datareader library
@@ -47,6 +31,23 @@ def get_stocks_data(stock_idx = "AAPL", start_date = "01/01/2004", end_date = "1
     data.insert(0, "Dates", datetime_dates_list)
     # data.insert(0, "Dates", wk_days)
     return data
+
+
+def get_google_trends_data(keyword, timeframe):
+    """
+    Requires the pytrends library
+    Please visit the GitHub link for detailed explanation of the "unofficial API for Google Trends" called pytrends
+    GitHub link: https://github.com/GeneralMills/pytrends
+    :param keyword: a list of str format elements of the keywords to be searched
+    i.e. ["Bitcoin"] or ["Debt", "Mortgage", "Financial Crisis"]
+    :return: a pandas DataFrame object
+    """
+    pytrend_obj = TrendReq()
+    pytrend_obj.build_payload(keyword, cat=0, timeframe = timeframe, geo='', gprop='')
+    interest_over_time_df = pytrend_obj.interest_over_time()
+    data = interest_over_time_df[keyword]
+    return data
+
 
 def date_transfromer(begin_date='2004-01-01',end_date=date.today(),interval_months=3):
 
@@ -71,7 +72,6 @@ def date_transfromer(begin_date='2004-01-01',end_date=date.today(),interval_mont
         # Add an interval to go to the next interval
         datum = datum + relativedelta(months=+interval_months)
 
-
     return emptylist
 
 
@@ -84,7 +84,7 @@ def multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.
     date_list_3m = date_transfromer(begin_date=begin_date,end_date=end_date,interval_months=1)
     date_number = 0
 
-    # Make empty datatframe
+    # Make empty dataframe
     google_data_frame_3_months = pd.DataFrame()
 
     # Iterate over the list with 3 month intervals
@@ -109,7 +109,6 @@ def multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.
 def get_daily_and_montly_data(keyword,begin_date='2016-01-01',end_date=date.today()):
 
     # Combine the daily data with the monthly data
-
     # Get the timeframe in the right format for google (bigpicture)
     timeframe = '{} {}'.format('2004-01-01', date.today())
 
@@ -167,3 +166,5 @@ def get_google_trends_for_longer_time_period(keyword,begin_date='2016-01-01',end
     # This function is to make it all look a bit nicer
     normalized_dataframe = merge_monthly_and_daily_data(keyword,begin_date=begin_date,end_date=end_date)
     return normalized_dataframe
+
+
