@@ -161,8 +161,12 @@ def acces_month_from_date(date):
     month_only = date[:-12]
     return month_only
 
-def get_google_trends_for_longer_time_period(keyword,begin_date='2016-01-01',end_date=date.today()):
+def get_google_trends_for_longer_time_period(keyword,begin_date='2014-01-01',end_date=date.today()):
     # I think this is called a wrapper?
     # This function is to make it all look a bit nicer
-    normalized_dataframe = merge_monthly_and_daily_data(keyword,begin_date=begin_date,end_date=end_date)
-    return normalized_dataframe
+    df3 = merge_monthly_and_daily_data(keyword,begin_date=begin_date,end_date=end_date)
+    df3 = df3[~df3.index.duplicated(keep='last')]
+    df3dict = df3.to_dict()
+    df3series = pd.Series(df3dict)
+    return df3series
+df = get_google_trends_for_longer_time_period(['pizza'])
