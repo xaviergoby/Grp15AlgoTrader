@@ -2,15 +2,18 @@
 
 import pandas_datareader as web
 import pandas as pd
+import datetime
+from datetime import date
+from dateutil.relativedelta import relativedelta
 from pytrends.request import TrendReq
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 
 
-def get_google_trends_data(keyword):
+def get_google_trends_data(keyword, timeframe):
     """
-    Requires the pyrends library
+    Requires the pytrends library
     Please visit the GitHub link for detailed explanation of the "unofficial API for Google Trends" called pytrends
     GitHub link: https://github.com/GeneralMills/pytrends
     :param keyword: a list of str format elements of the keywords to be searched
@@ -18,12 +21,12 @@ def get_google_trends_data(keyword):
     :return: a pandas DataFrame object
     """
     pytrend_obj = TrendReq()
-    pytrend_obj.build_payload(keyword, cat=0, timeframe='today 3-m', geo='', gprop='')
+    pytrend_obj.build_payload(keyword, cat=0, timeframe = timeframe, geo='', gprop='')
     interest_over_time_df = pytrend_obj.interest_over_time()
     data = interest_over_time_df[keyword]
     return data
 
-def get_stocks_data(stock_idx = "AAPL", start_date = "01/01/2014", end_date = "12/06/2018"):
+def get_stocks_data(stock_idx = "AAPL", start_date = "01/01/2004", end_date = "12/06/2018"):
     """
     Requires the pandas-datareader library
     :param stock_idx: str of yahoo index be default is "AAPL"
@@ -45,6 +48,68 @@ def get_stocks_data(stock_idx = "AAPL", start_date = "01/01/2014", end_date = "1
     # data.insert(0, "Dates", wk_days)
     return data
 
+def date_transfromer(begin_date='2004-01-01',end_date=date.today(),interval='3m'):
+    emptylist = []
+    year = int(begin_date[0:4])
+    month = int(begin_date[5:7])
+    day = int(begin_date[8:10])
 
+    datum = datetime.date(year,month,day)
+    while datum < end_date:
+        rightformat = datum.strftime('%Y-%m-%d')
+        emptylist.append(rightformat)
+        datum = datum + relativedelta(months=+1)
+    return emptylist
+
+
+
+def multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.today()):
+    date_list_3m = date_transfromer(begin_date=begin_date,end_date=end_date,interval='3m')
+    date_number = 0
+    google_data_frame_3_months = pd.DataFrame()
+    while date_number < len(date_list_3m) -1:
+        start_date = date_list_3m[date_number]
+        final_date = date_list_3m[date_number + 1]
+        timeframe = '{} {}'.format(start_date, final_date)
+        google_data = get_google_trends_data(keyword,timeframe)
+        frames = [google_data_frame_3_months,google_data]
+        google_data_frame_3_months = pd.concat(frames)
+        date_number += 1
+    return google_data_frame_3_months
+
+def relative_search_density_longer_period(keyword,begin_date='2004-01-01',end_date=date.today()):
+    timeframe = '{} {}'.format(begin_date, end_date)
+    # This has a 7-day interval
+    big_picture = get_google_trends_data(keyword,timeframe)
+    daily_data = multiple_time_frames_combiner(keyword,begin_date='2016-01-01',end_date=date.today())
+    month_list = date_transfromer()
+    print(daily_data)
+    for date_value in month_list:
+        print(date_value)
+        print(type(date_value))
+        year_value = int(date_value[0:4])
+        month_value = int(date_value[5:7])
+        for index, row in big_picture.iterrows():
+            month_from_daily_values = big_picture.loc[(big_picture['date'].year == year_value) & (big_picture['date'].month == month_value)]
+        print(month_value)
+        return month_value
+
+
+    # for index, row in big_picture.iterrows():
+    #     date_value = row['date']
+    #     print(date_value)
+    #     year_value = int(date_value[0:4])
+    #     month_value = int(date_value[5:7])
+    #     month_from_daily_values = daily_data.loc[(daily_data['date'].year == year_value) & (daily_data['date'].month == month_value)]
+    # print(month_from_daily_values)
+
+
+
+
+
+#print(multiple_time_frames_combiner(['Pizza']))
+
+print(relative_search_density_longer_period(['Pizza']))
+x = relative_search_density_longer_period(['Pizza'])
 
 

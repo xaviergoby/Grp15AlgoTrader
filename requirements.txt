@@ -1,0 +1,6 @@
+pandas_datareader
+pandas
+numpy
+pytrends
+python-dateutil
+datetime
